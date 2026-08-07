@@ -11,7 +11,7 @@ const { privateKeyToAccount } = require("viem/accounts");
 const { createPublicClient, http } = require("viem");
 const { base } = require("viem/chains");
 
-const VERSION = "0.1.0";
+const VERSION = "0.1.1";
 const BASE_URL = "https://crypto.forgemesh.io";
 const BASE_RPC_URL = process.env.BASE_RPC_URL || "https://mainnet.base.org";
 const REQUEST_TIMEOUT_MS = 30_000;

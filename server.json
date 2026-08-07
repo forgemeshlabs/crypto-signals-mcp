@@ -1,0 +1,27 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.forgemeshlabs/crypto-signals-mcp",
+  "description": "Crypto Signals by ForgeMesh: market intelligence, calibrated forecasts, whale flows, risk context, decision journals, and outcome audits via x402.",
+  "repository": {
+    "url": "https://github.com/forgemeshlabs/crypto-signals-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@forgemeshlabs/crypto-signals-mcp",
+      "version": "0.1.0",
+      "transport": { "type": "stdio" },
+      "environmentVariables": [
+        {
+          "name": "WALLET_PRIVATE_KEY",
+          "description": "Dedicated low-balance Base wallet private key for x402 USDC micropayments. Never use a primary wallet.",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "maintainers": ["clawdbotworker"],
+  "name": "Crypto Signals by ForgeMesh",
+  "description": "Paid crypto market intelligence through x402 on Base",
+  "transport": "stdio"
+}

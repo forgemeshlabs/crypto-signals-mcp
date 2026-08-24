@@ -24,16 +24,34 @@ const symbolSchema = {
 const TOOLS = [
   {
     name: "get_crypto_signals",
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     description: "Retrieve current BTC, ETH, SOL, XRP, and ADA market-intelligence signals, ranked context, regime, and freshness. Costs $0.05 USDC.",
     inputSchema: { type: "object", properties: {} }
   },
   {
     name: "get_crypto_risk",
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     description: "Retrieve the current market risk state, signal streaks, and cooldown context before deeper analysis. Costs $0.02 USDC.",
     inputSchema: { type: "object", properties: {} }
   },
   {
     name: "get_crypto_signal_history",
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     description: "Retrieve recent Kronos market context history for supported crypto symbols. Costs $0.05 USDC.",
     inputSchema: {
       type: "object",
@@ -42,16 +60,34 @@ const TOOLS = [
   },
   {
     name: "get_crypto_preflight",
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     description: "Run the market-state, cooldown, freshness, and model-context preflight step before creating a decision journal. Costs $0.05 USDC.",
     inputSchema: { type: "object", properties: { symbol: symbolSchema }, required: ["symbol"] }
   },
   {
     name: "get_crypto_decision",
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     description: "Create an auditable market-intelligence journal containing calibrated context and a decision_id for later outcome review. Costs $0.15 USDC.",
     inputSchema: { type: "object", properties: { symbol: symbolSchema }, required: ["symbol"] }
   },
   {
     name: "audit_crypto_decision",
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     description: "Audit a prior decision_id against subsequent market prices over a 1h, 4h, or 24h evaluation window. Costs $0.07 USDC.",
     inputSchema: {
       type: "object",
@@ -64,16 +100,34 @@ const TOOLS = [
   },
   {
     name: "get_crypto_forecast",
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     description: "Retrieve an empirically calibrated 80% price interval, current price, point return, and upside probability. Costs $0.05 USDC.",
     inputSchema: { type: "object", properties: { symbol: symbolSchema } }
   },
   {
     name: "get_single_crypto_signal",
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     description: "Retrieve the current signal context for one crypto symbol using the compatibility lookup route. Costs $0.05 USDC.",
     inputSchema: { type: "object", properties: { symbol: symbolSchema }, required: ["symbol"] }
   },
   {
     name: "get_crypto_whale_alerts",
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     description: "Retrieve whale-scale transfers, exchange flows, bridge flows, and stablecoin events for Ethereum, Base, or Arbitrum. Costs $0.02 USDC.",
     inputSchema: {
       type: "object",
@@ -85,6 +139,12 @@ const TOOLS = [
   },
   {
     name: "submit_crypto_feedback",
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
     description: "Submit paid feedback, a symbol request, bug report, or integration suggestion to ForgeMesh Crypto Signals. Costs $0.005 USDC.",
     inputSchema: {
       type: "object",

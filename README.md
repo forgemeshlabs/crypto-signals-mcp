@@ -1,5 +1,7 @@
 # Crypto Signals by ForgeMesh
 
+[![M8ven Score](https://m8ven.ai/badge/mcp/forgemeshlabs-crypto-signals-mcp-1qui57)](https://m8ven.ai/mcp/forgemeshlabs-crypto-signals-mcp-1qui57)
+
 Dedicated MCP wrapper for [ForgeMesh Crypto Signals](https://crypto.forgemesh.io), an x402 crypto market-intelligence service.
 
 This is separate from `coinopai-mcp`. Every tool targets `crypto.forgemesh.io` and pays the ForgeMesh Crypto Signals service wallet through x402 on Base.

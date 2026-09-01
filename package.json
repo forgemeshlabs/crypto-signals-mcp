@@ -1,8 +1,8 @@
 {
   "name": "@forgemeshlabs/crypto-signals-mcp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "mcpName": "io.github.forgemeshlabs/crypto-signals-mcp",
-  "description": "Crypto Signals by ForgeMesh — paid market signals, risk state, calibrated forecasts, whale flows, decision journals, and outcome audits via x402",
+  "description": "Crypto Signals by ForgeMesh \u2014 paid market signals, risk state, calibrated forecasts, whale flows, decision journals, and outcome audits via x402",
   "main": "index.js",
   "bin": {
     "crypto-signals-mcp": "index.js"

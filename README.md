@@ -1,6 +1,7 @@
 # Crypto Signals by ForgeMesh
 
 [![M8ven Score](https://m8ven.ai/badge/mcp/forgemeshlabs-crypto-signals-mcp-1qui57)](https://m8ven.ai/mcp/forgemeshlabs-crypto-signals-mcp-1qui57)
+[![mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/forgemeshlabs/crypto-signals-mcp)
 
 Dedicated MCP wrapper for [ForgeMesh Crypto Signals](https://crypto.forgemesh.io), an x402 crypto market-intelligence service.
 

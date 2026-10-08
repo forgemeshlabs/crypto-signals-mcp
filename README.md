@@ -31,6 +31,11 @@ Example MCP configuration:
 }
 ```
 
+## Requirements
+
+- Node.js 20 or newer and a dedicated, low-balance Base wallet (`WALLET_PRIVATE_KEY`).
+- Spending caps: the server only talks to `https://crypto.forgemesh.io` and refuses to sign for any other payee, any network except Base mainnet, any asset except USDC, or any amount above the built-in $0.15 per-call and $10 per-session caps. The environment variables `X402_MAX_PRICE_USD` and `X402_SESSION_BUDGET_USD` can only lower those caps, never raise them.
+
 ## Tools
 
 - `get_crypto_signals` — $0.05

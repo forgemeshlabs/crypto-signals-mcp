@@ -9,6 +9,7 @@
   },
   "files": [
     "index.js",
+    "x402-guard.js",
     "README.md",
     "server.json",
     "glama.json",

@@ -2,7 +2,7 @@
 
 ## 0.1.7
 
-- Dependencies: lockfile refresh resolving the open npm advisories (zod via @x402/core, body-parser, fast-uri, qs, ip-address, @hono/node-server as applicable). No behavior change.
+- Dependencies: @x402/core + @x402/evm 2.11.0 → 2.29.0 (drops the transitive vulnerable zod); lockfile refresh resolving the open npm advisories (zod via @x402/core, body-parser, fast-uri, qs, ip-address, @hono/node-server as applicable). No behavior change.
 
 ## 0.1.1 — 2026-08-07
 

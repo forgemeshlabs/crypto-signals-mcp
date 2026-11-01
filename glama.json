@@ -1,7 +1,10 @@
 {
   "$schema": "https://glama.ai/mcp/schemas/server.json",
-  "maintainers": ["clawdbotworker"],
+  "maintainers": [
+    "clawdbotworker"
+  ],
   "name": "Crypto Signals by ForgeMesh",
   "description": "Paid crypto market intelligence through x402 on Base",
-  "transport": "stdio"
+  "transport": "stdio",
+  "version": "0.1.7"
 }

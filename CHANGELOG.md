@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7
+
+- Dependencies: lockfile refresh resolving the open npm advisories (zod via @x402/core, body-parser, fast-uri, qs, ip-address, @hono/node-server as applicable). No behavior change.
+
 ## 0.1.1 — 2026-08-07
 
 - Replaced the internal runtime identifier in public-facing package copy with the product description “x402 crypto market-intelligence service.”

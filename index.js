@@ -131,7 +131,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Whale alerts: large exchange, bridge and stablecoin-issuer flows at monitored addresses on Ethereum, Base or Arbitrum. Each alert has an event type (CEX_INFLOW, CEX_OUTFLOW, BRIDGE_IN, BRIDGE_OUT, STABLECOIN_MINT, STABLECOIN_REDEEM), source, amount and timestamp. Costs $0.02 USDC.",
+    description: "Whale alerts: large exchange, bridge and stablecoin-issuer flows at monitored addresses (major exchanges, L2 bridges, Tether and Circle treasuries). Pass chain (ethereum, base or arbitrum) and hours (lookback 1-168, default 4). Returns JSON with chain, window_hours, alert_count and alerts, each with symbol (CEX_INFLOW, CEX_OUTFLOW, BRIDGE_IN, BRIDGE_OUT, STABLECOIN_MINT or STABLECOIN_REDEEM), source, amount_eth or amount_usd and timestamp. Costs $0.02 USDC.",
     inputSchema: {
       type: "object",
       properties: {

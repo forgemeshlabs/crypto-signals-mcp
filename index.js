@@ -33,7 +33,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Retrieve current BTC, ETH, SOL, XRP, and ADA market-intelligence signals, ranked context, regime, and freshness. Costs $0.05 USDC.",
+    description: "Crypto trading signals: latest signal scores for BTC, ETH, SOL, XRP and ADA with ranked top_k, regime, score details and data freshness. Market intelligence only. Costs $0.05 USDC.",
     inputSchema: { type: "object", properties: {} }
   },
   {
@@ -44,7 +44,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Retrieve the current market risk state, signal streaks, and cooldown context before deeper analysis. Costs $0.02 USDC.",
+    description: "Crypto market risk state: current risk state, per-symbol signal streaks and cooldown timers. Use it as a risk gate before deeper analysis. Costs $0.02 USDC.",
     inputSchema: { type: "object", properties: {} }
   },
   {
@@ -55,7 +55,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Retrieve recent Kronos market context history for supported crypto symbols. Costs $0.05 USDC.",
+    description: "Crypto signal history: recent signal snapshots for BTC, ETH, SOL, XRP and ADA (up to 168 hours). Costs $0.05 USDC.",
     inputSchema: {
       type: "object",
       properties: { hours: { type: "integer", minimum: 1, maximum: 168, description: "History window in hours, from 1 to 168 (default 24)" } }
@@ -69,7 +69,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Run the market-state, cooldown, freshness, and model-context preflight step before creating a decision journal. Costs $0.05 USDC.",
+    description: "Crypto market preflight: go/no-go check for one symbol (allowed flag, market state, cooldown, warnings) before creating a decision journal. Costs $0.05 USDC.",
     inputSchema: { type: "object", properties: { symbol: symbolSchema }, required: ["symbol"] }
   },
   {
@@ -80,7 +80,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Create an auditable market-intelligence journal containing calibrated context and a decision_id for later outcome review. Costs $0.15 USDC.",
+    description: "Crypto decision journal: an auditable market-intelligence record for one symbol with directional bias, calibrated confidence and a decision_id for later outcome review. Costs $0.15 USDC.",
     inputSchema: { type: "object", properties: { symbol: symbolSchema }, required: ["symbol"] }
   },
   {
@@ -91,7 +91,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Audit a prior decision_id against subsequent market prices over a 1h, 4h, or 24h evaluation window. Costs $0.07 USDC.",
+    description: "Decision outcome audit: checks a prior decision_id against later market prices over a 1h, 4h or 24h window and returns the verdict. Costs $0.07 USDC.",
     inputSchema: {
       type: "object",
       properties: {
@@ -109,7 +109,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Retrieve an empirically calibrated 80% price interval, current price, point return, and upside probability. Costs $0.05 USDC.",
+    description: "Crypto price forecast: calibrated 80% price range, current price and upside probability for BTC, ETH, SOL, XRP or ADA. Costs $0.05 USDC.",
     inputSchema: { type: "object", properties: { symbol: symbolSchema } }
   },
   {
@@ -120,7 +120,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Retrieve the current signal context for one crypto symbol using the compatibility lookup route. Costs $0.05 USDC.",
+    description: "Single-symbol crypto signal: current signal snapshot for one symbol (e.g. BTC or BTCUSDT) via the compatibility lookup route. Costs $0.05 USDC.",
     inputSchema: { type: "object", properties: { symbol: symbolSchema }, required: ["symbol"] }
   },
   {
@@ -131,7 +131,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Retrieve whale-scale transfers, exchange flows, bridge flows, and stablecoin events for Ethereum, Base, or Arbitrum. Costs $0.02 USDC.",
+    description: "Whale alerts: large exchange, bridge and stablecoin-issuer flows at monitored addresses on Ethereum, Base or Arbitrum. Each alert has an event type (CEX_INFLOW, CEX_OUTFLOW, BRIDGE_IN, BRIDGE_OUT, STABLECOIN_MINT, STABLECOIN_REDEEM), source, amount and timestamp. Costs $0.02 USDC.",
     inputSchema: {
       type: "object",
       properties: {
@@ -148,7 +148,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Submit paid feedback, a symbol request, bug report, or integration suggestion to ForgeMesh Crypto Signals. Costs $0.005 USDC.",
+    description: "Feedback to the operator: send a symbol request, bug report or integration suggestion to ForgeMesh Crypto Signals. Costs $0.005 USDC.",
     inputSchema: {
       type: "object",
       properties: {

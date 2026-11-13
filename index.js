@@ -21,8 +21,18 @@ const symbolSchema = {
   type: "string",
   maxLength: 32,
   pattern: "^[A-Za-z0-9._/-]{1,32}$",
-  description: "Market symbol such as BTC, ETH, SOL, XRP, ADA, AAPL, SPY, or NVDA"
+  description: "Tracked market symbol: a crypto pair (BTC, ETH, SOL, XRP, ADA and others) or a US stock/ETF ticker (AAPL, SPY, NVDA). An unknown symbol is answered 404 and not charged."
 };
+
+const cryptoSymbolSchema = {
+  type: "string",
+  enum: ["BTC", "ETH", "SOL", "XRP", "ADA"],
+  default: "BTC",
+  description: "Crypto symbol. Forecasts cover BTC, ETH, SOL, XRP and ADA only."
+};
+
+const SIGNALS_FILTER_PATTERN = /^[A-Za-z0-9._\/,-]{1,200}$/;
+const FORECAST_SYMBOLS = ["BTC", "ETH", "SOL", "XRP", "ADA"];
 
 const TOOLS = [
   {
@@ -33,8 +43,8 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Crypto trading signals: latest signal scores for BTC, ETH, SOL, XRP and ADA with ranked top_k, regime, score details and data freshness. Market intelligence only. Costs $0.05 USDC.",
-    inputSchema: { type: "object", properties: {} }
+    description: "Trading signals for crypto and US equities: the latest Kronos signal score for every tracked symbol (crypto pairs plus US stocks and ETFs) in one hourly snapshot, with top_k, regime, score_details, data_quality, as_of, timeframe and data_freshness. Optional symbol filter, e.g. BTC,ETH. Crypto updates hourly; equity bars update in US market hours. A snapshot older than 2 hours is refused unpaid. Market intelligence only. Costs $0.05 USDC.",
+    inputSchema: { type: "object", properties: { symbol: { type: "string", maxLength: 200, pattern: "^[A-Za-z0-9._/,-]{1,200}$", description: "Optional symbol filter, comma-separated, e.g. BTC,ETH" } } }
   },
   {
     name: "get_crypto_risk",
@@ -44,7 +54,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Crypto market risk state: current risk state, per-symbol signal streaks and cooldown timers. Use it as a risk gate before deeper analysis. Costs $0.02 USDC.",
+    description: "Market risk state: current Kronos risk state, per-symbol signal streaks and active cooldown timers, rewritten every hourly cycle. Returns state, signal_streak, cooldown, last_updated, data_freshness and why_not_high caveats. A risk state older than 2 hours is refused unpaid. Use it as a low-cost risk gate. Costs $0.02 USDC.",
     inputSchema: { type: "object", properties: {} }
   },
   {
@@ -55,10 +65,10 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Crypto signal history: recent signal snapshots for BTC, ETH, SOL, XRP and ADA (up to 168 hours). Costs $0.05 USDC.",
+    description: "Signal history: hourly Kronos signal snapshots for every tracked symbol over a lookback window. Pass hours (integer 1-168, default 24). Returns count, hours, window, timeframe and signals: one snapshot per hourly cycle, each with ts, per-symbol scores, score_details and top_k. Invalid hours is answered 400 and not charged. Costs $0.05 USDC.",
     inputSchema: {
       type: "object",
-      properties: { hours: { type: "integer", minimum: 1, maximum: 168, description: "History window in hours, from 1 to 168 (default 24)" } }
+      properties: { hours: { type: "integer", minimum: 1, maximum: 168, description: "Lookback window in hours, integer 1 to 168 (default 24)" } }
     }
   },
   {
@@ -69,7 +79,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Crypto market preflight: go/no-go check for one symbol (allowed flag, market state, cooldown, warnings) before creating a decision journal. Costs $0.05 USDC.",
+    description: "Market preflight: a go/no-go check for one tracked symbol before a costlier decision call. Returns allowed (true or false), market_state, in_cooldown, signal_strength, data_freshness and warnings. An unknown symbol is answered 404 and a stale or missing signal 503; neither is charged. Costs $0.05 USDC.",
     inputSchema: { type: "object", properties: { symbol: symbolSchema }, required: ["symbol"] }
   },
   {
@@ -80,7 +90,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Crypto decision journal: an auditable market-intelligence record for one symbol with directional bias, calibrated confidence and a decision_id for later outcome review. Costs $0.15 USDC.",
+    description: "Decision journal: an auditable market-intelligence record for one tracked symbol (crypto or US equity). Returns directional_bias, confidence (the measured directional hit rate for that symbol, or null with calibration insufficient_outcomes), anomaly_score and level, signal_gates, why_not_high caveats and a decision_id. Unknown or unavailable symbols are not charged. Market intelligence only; not financial advice. Costs $0.15 USDC.",
     inputSchema: { type: "object", properties: { symbol: symbolSchema }, required: ["symbol"] }
   },
   {
@@ -91,7 +101,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Decision outcome audit: checks a prior decision_id against later market prices over a 1h, 4h or 24h window and returns the verdict. Costs $0.07 USDC.",
+    description: "Decision outcome audit: scores a prior decision_id against the price move over its window, measured on the hourly Kronos feed from the decision's signal bar. Returns verdict, outcome (pnl_pct, direction_correct), prices with timestamps, directional_bias and symbol. A window that has not closed is answered HTTP 425 with available_at and is not charged; retry after available_at. Decisions stay auditable for 7 days. Costs $0.07 USDC.",
     inputSchema: {
       type: "object",
       properties: {
@@ -109,8 +119,8 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Crypto price forecast: calibrated 80% price range, current price and upside probability for BTC, ETH, SOL, XRP or ADA. Costs $0.05 USDC.",
-    inputSchema: { type: "object", properties: { symbol: symbolSchema } }
+    description: "Crypto price forecast: calibrated price range for BTC, ETH, SOL, XRP or ADA, refit hourly. Returns horizon, current_price, range_80 (low and high of a conformal 80% interval, with recent empirical coverage), upside_probability with calibration details, as_of and why_not_high caveats. A forecast older than 2 hours is refused unpaid. Costs $0.05 USDC.",
+    inputSchema: { type: "object", properties: { symbol: cryptoSymbolSchema } }
   },
   {
     name: "get_single_crypto_signal",
@@ -120,7 +130,7 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Single-symbol crypto signal: current signal snapshot for one symbol (e.g. BTC or BTCUSDT) via the compatibility lookup route. Costs $0.05 USDC.",
+    description: "Single-symbol trading signal: the latest Kronos signal for one symbol (BTC, BTC/USD, BTCUSDT, btc, or a stock ticker such as AAPL). Returns symbol, signal, score_details, data_quality, as_of, regime and data_freshness (MARKET_CLOSED with the last bar time for equities outside US market hours). An unknown symbol is answered 404 and not charged. Costs $0.05 USDC.",
     inputSchema: { type: "object", properties: { symbol: symbolSchema }, required: ["symbol"] }
   },
   {
@@ -131,12 +141,12 @@ const TOOLS = [
       idempotentHint: false,
       openWorldHint: true,
     },
-    description: "Whale alerts: large exchange, bridge and stablecoin-issuer flows at monitored addresses (major exchanges, L2 bridges, Tether and Circle treasuries). Pass chain (ethereum, base or arbitrum) and hours (lookback 1-168, default 4). Returns JSON with chain, window_hours, alert_count and alerts, each with symbol (CEX_INFLOW, CEX_OUTFLOW, BRIDGE_IN, BRIDGE_OUT, STABLECOIN_MINT or STABLECOIN_REDEEM), source, amount_eth or amount_usd and timestamp. Costs $0.02 USDC.",
+    description: "Whale alerts: large exchange, bridge and stablecoin-issuer flows at monitored addresses (major exchanges, L2 bridges, Tether and Circle treasuries). Pass chain (ethereum, base or arbitrum; default base) and hours (1-168, default 4; base max 96). Returns JSON with chain, window_hours, alert_count, alerts (symbol such as CEX_INFLOW or BRIDGE_IN, source, timestamp, amount_eth for ETH flows, amount_usd priced from the hourly ETH/USD feed, or null with a reason) and source_status. Empty windows are stated. Costs $0.02 USDC.",
     inputSchema: {
       type: "object",
       properties: {
         chain: { type: "string", enum: ["ethereum", "base", "arbitrum"], description: "Chain to inspect (default base)" },
-        hours: { type: "integer", minimum: 1, maximum: 168, description: "Lookback in hours, from 1 to 168 (default 4)" }
+        hours: { type: "integer", minimum: 1, maximum: 168, description: "Lookback in hours, integer 1 to 168 (default 4; base allows at most 96)" }
       }
     }
   },
@@ -192,7 +202,7 @@ function buildHttpClient() {
 
 function routeForTool(name, args = {}) {
   switch (name) {
-    case "get_crypto_signals": return { path: "/api/signals" };
+    case "get_crypto_signals": return { path: args.symbol === undefined || args.symbol === "" ? "/api/signals" : `/api/signals?symbol=${encodeURIComponent(patternText(args.symbol, "symbol", SIGNALS_FILTER_PATTERN, 200))}` };
     case "get_crypto_risk": return { path: "/api/kronos/risk" };
     case "get_crypto_signal_history": return { path: `/api/kronos/history?hours=${clampInteger(args.hours, 24, 1, 168)}` };
     case "get_crypto_preflight": return { path: `/api/kronos/preflight?symbol=${encodeURIComponent(patternText(args.symbol, "symbol", SYMBOL_PATTERN, 32))}` };
@@ -201,7 +211,11 @@ function routeForTool(name, args = {}) {
       const window = ["1h", "4h", "24h"].includes(args.window) ? args.window : "4h";
       return { path: `/api/kronos/audit?decision_id=${encodeURIComponent(patternText(args.decision_id, "decision_id", ID_PATTERN, 128))}&window=${window}` };
     }
-    case "get_crypto_forecast": return { path: `/api/kronos/forecast?symbol=${encodeURIComponent(args.symbol === undefined ? "BTC" : patternText(args.symbol, "symbol", SYMBOL_PATTERN, 32))}` };
+    case "get_crypto_forecast": {
+      const symbol = args.symbol === undefined ? "BTC" : patternText(args.symbol, "symbol", SYMBOL_PATTERN, 32).toUpperCase();
+      if (!FORECAST_SYMBOLS.includes(symbol)) throw new Error(`symbol must be one of ${FORECAST_SYMBOLS.join(", ")} for forecasts`);
+      return { path: `/api/kronos/forecast?symbol=${symbol}` };
+    }
     case "get_single_crypto_signal": return { path: `/signal/${encodeURIComponent(patternText(args.symbol, "symbol", SYMBOL_PATTERN, 32))}` };
     case "get_crypto_whale_alerts": {
       const chain = ["ethereum", "base", "arbitrum"].includes(args.chain) ? args.chain : "base";
@@ -235,7 +249,12 @@ function createServer() {
       return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      return { content: [{ type: "text", text: JSON.stringify({ code: "CRYPTO_SIGNALS_MCP_ERROR", message, details: { tool: name } }) }], isError: true };
+      // Surface the service's refusal as-is: HTTP status, charged flag and the response body.
+      const out = { code: "CRYPTO_SIGNALS_MCP_ERROR", message, details: { tool: name } };
+      if (error && error.status !== undefined) out.status = error.status;
+      if (error && error.charged !== undefined) out.charged = error.charged;
+      if (error && error.upstream !== undefined) out.upstream = error.upstream;
+      return { content: [{ type: "text", text: JSON.stringify(out) }], isError: true };
     }
   });
   return server;

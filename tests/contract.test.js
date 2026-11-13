@@ -43,3 +43,19 @@ test("live API is healthy and paid tools remain challenge-first without spending
   assert.equal(response.status, 402);
   assert.ok(response.headers.get("payment-required"));
 });
+
+test("forecast is crypto-only and signals accept a symbol filter", () => {
+  assert.equal(routeForTool("get_crypto_signals", { symbol: "BTC,ETH" }).path, "/api/signals?symbol=BTC%2CETH");
+  assert.equal(routeForTool("get_crypto_forecast", { symbol: "eth" }).path, "/api/kronos/forecast?symbol=ETH");
+  assert.throws(() => routeForTool("get_crypto_forecast", { symbol: "AAPL" }), /one of/);
+});
+
+test("a service refusal keeps its HTTP status, charged flag and body", async () => {
+  const { createGuard } = require("../x402-guard");
+  const guard = createGuard({ baseUrl: BASE_URL, payTo: [] });
+  const real = global.fetch;
+  global.fetch = async () => new Response(JSON.stringify({ error: "window_open", available_at: "2026-11-13T12:00:00Z", charged: false }), { status: 425, headers: { "content-type": "application/json" } });
+  try {
+    await assert.rejects(guard.callPaid(null, "/api/kronos/audit?decision_id=x"), (e) => e.status === 425 && e.charged === false && e.upstream.available_at && /425/.test(e.message));
+  } finally { global.fetch = real; }
+});

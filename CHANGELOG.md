@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 — 2026-11-13
+
+- Tool text and schemas refreshed to the live service contract (route integrity pass): tracked symbols are crypto plus US stocks and ETFs, not only BTC/ETH/SOL/XRP/ADA; decision `confidence` is the measured hit rate or null; audit answers 425 with `available_at` while its window is open; history `hours` 1-168; whale `amount_usd`; stale data is refused unpaid.
+- `get_crypto_signals` accepts an optional `symbol` filter; `get_crypto_forecast` symbol is now an enum of BTC, ETH, SOL, XRP, ADA.
+- Errors now carry the service's HTTP `status`, `charged` flag and `upstream` body instead of a truncated string.
+
 ## 0.1.7
 
 - Dependencies: @x402/core + @x402/evm 2.11.0 → 2.29.0 (drops the transitive vulnerable zod); lockfile refresh resolving the open npm advisories (zod via @x402/core, body-parser, fast-uri, qs, ip-address, @hono/node-server as applicable). No behavior change.

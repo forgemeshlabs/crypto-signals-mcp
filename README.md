@@ -49,4 +49,6 @@ Example MCP configuration:
 - `get_crypto_whale_alerts` — $0.02
 - `submit_crypto_feedback` — $0.005
 
+Notes on live behavior: signal, preflight and decision tools cover every tracked symbol (crypto pairs plus US stocks and ETFs); forecasts cover BTC, ETH, SOL, XRP and ADA only. `confidence` in a decision journal is the measured directional hit rate for that symbol, or `null` when there are too few evaluated outcomes. `audit_crypto_decision` returns HTTP 425 with `available_at` while the window is still open, and decisions stay auditable for 7 days. History `hours` is an integer from 1 to 168. Stale data is refused, and refusals (unknown symbol 404, stale 503, window open 425) are not charged: errors from this server carry the HTTP `status`, `charged` flag and the service's own `upstream` body.
+
 All outputs are market intelligence for research and decision support, not financial advice or market activity instructions.

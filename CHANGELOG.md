@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Hardening: error messages are now short and fixed (HTTP status plus the service's error code); the service body is carried only as capped structured data in `upstream`, never interpolated into the message. No tool or price change.
+
 ## 0.2.0 — 2026-11-13
 
 - Tool text and schemas refreshed to the live service contract (route integrity pass): tracked symbols are crypto plus US stocks and ETFs, not only BTC/ETH/SOL/XRP/ADA; decision `confidence` is the measured hit rate or null; audit answers 425 with `available_at` while its window is open; history `hours` 1-168; whale `amount_usd`; stale data is refused unpaid.
